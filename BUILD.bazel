@@ -1,0 +1,18 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+sh_test(
+    name = "extension_contract_test",
+    srcs = ["tools/bazel-extension-contract-test.sh"],
+    data = [
+        "background.html",
+        "background.js",
+        "manifest.json",
+        "options.css",
+        "options.html",
+        "options.js",
+        "tools/extension-contract-test.cjs",
+        "webpack.config.js",
+    ],
+    size = "small",
+    visibility = ["//visibility:public"],
+)
