@@ -30,6 +30,7 @@ for (const [name, page] of [
   assert.equal(entry, path.join(root, `${name}.js`), `${name} source entry`);
   assert.ok(fs.existsSync(entry), `missing entry: ${webpack.entry[name]}`);
 
+  const styles = [];
   for (const tag of html.matchAll(/<link\b[^>]*>/gi)) {
     const rel = attribute(tag[0], 'rel');
     if (!rel?.toLowerCase().split(/\s+/).includes('stylesheet')) continue;
@@ -41,7 +42,10 @@ for (const [name, page] of [
     assert.ok(fs.existsSync(assetPath), `missing asset: ${asset}`);
     assert.ok(fs.statSync(assetPath).isFile(), `asset is not a file: ${asset}`);
     assert.equal(path.extname(assetPath), '.css', `not a CSS asset: ${asset}`);
+    styles.push(asset);
   }
+  assert.deepEqual(styles, name === 'options' ? ['options.css'] : [],
+    `${name} stylesheet references`);
 }
 
 console.log('Extension manifest, pages, bundle names, and local assets agree');
