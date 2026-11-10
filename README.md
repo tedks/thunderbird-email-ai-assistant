@@ -49,6 +49,10 @@ periodically, as tagging is executed after initial filtering.
 
 ## Development
 
+### Offline source contract
+
+On Linux, `nix develop --command bazel test //:extension_contract_test` checks that the extension manifest, HTML pages, Webpack bundle names, entry files, and local stylesheet references agree. The Nix shell pins Bazel and Node; the test does not bundle, package, install, or run the extension and makes no mail or provider requests. The existing `./build.bash` packaging entrypoint remains a separate manual operation.
+
 ### Prerequisites
 
 - **Node.js and npm**: Required for managing dependencies and running build scripts. You can download them from [nodejs.org](https://nodejs.org/).
