@@ -23,8 +23,8 @@ for (const [name, page] of [
   assert.equal(page, `${name}.html`, `${name} manifest page`);
   const html = fs.readFileSync(path.join(root, page), 'utf8')
     .replace(/<!--[\s\S]*?-->/g, '');
-  const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
-    .map(match => match[1]);
+  const scripts = [...html.matchAll(/<script\b[^>]*>/gi)]
+    .map(tag => attribute(tag[0], 'src'));
   assert.deepEqual(scripts, [`${name}-bundle.js`], `${name} bundle reference`);
   const entry = path.resolve(root, webpack.entry[name]);
   assert.equal(entry, path.join(root, `${name}.js`), `${name} source entry`);
@@ -35,6 +35,7 @@ for (const [name, page] of [
     if (!rel?.toLowerCase().split(/\s+/).includes('stylesheet')) continue;
     const asset = attribute(tag[0], 'href');
     assert.ok(asset, `${name} stylesheet link has no href`);
+    assert.ok(!asset.endsWith('/'), `invalid asset path: ${asset}`);
     const assetPath = path.resolve(root, asset);
     assert.ok(assetPath.startsWith(root + path.sep), `nonlocal asset: ${asset}`);
     assert.ok(fs.existsSync(assetPath), `missing asset: ${asset}`);
