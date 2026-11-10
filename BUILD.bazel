@@ -14,5 +14,6 @@ sh_test(
         "webpack.config.js",
     ],
     size = "small",
+    # The parent workspace may compose this bounded test by label.
     visibility = ["//visibility:public"],
 )

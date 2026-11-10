@@ -2,4 +2,5 @@ common --enable_bzlmod
 common --lockfile_mode=error
 test --spawn_strategy=linux-sandbox
 test --sandbox_default_allow_network=false
+# The documented gate runs inside the locked Nix shell, which supplies Node.
 test --test_env=PATH

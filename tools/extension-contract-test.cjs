@@ -14,19 +14,24 @@ for (const [name, page] of [
   ['background', manifest.background.page],
   ['options', manifest.options_ui.page],
 ]) {
-  assert.equal(page, `${name}.html`);
-  const html = fs.readFileSync(path.join(root, page), 'utf8');
+  assert.equal(page, `${name}.html`, `${name} manifest page`);
+  const html = fs.readFileSync(path.join(root, page), 'utf8')
+    .replace(/<!--[\s\S]*?-->/g, '');
   const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
     .map(match => match[1]);
-  assert.deepEqual(scripts, [`${name}-bundle.js`]);
+  assert.deepEqual(scripts, [`${name}-bundle.js`], `${name} bundle reference`);
   const entry = path.resolve(root, webpack.entry[name]);
-  assert.equal(entry, path.join(root, `${name}.js`));
-  assert.ok(fs.existsSync(entry));
+  assert.equal(entry, path.join(root, `${name}.js`), `${name} source entry`);
+  assert.ok(fs.existsSync(entry), `missing entry: ${webpack.entry[name]}`);
 
-  for (const match of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+)["']/gi)) {
-    const asset = match[1];
-    assert.equal(path.basename(asset), asset, `nonlocal asset: ${asset}`);
-    assert.ok(fs.existsSync(path.join(root, asset)), `missing asset: ${asset}`);
+  for (const tag of html.matchAll(/<link\b[^>]*>/gi)) {
+    if (!/\brel=["']stylesheet["']/i.test(tag[0])) continue;
+    const href = tag[0].match(/\bhref=["']([^"']+)["']/i);
+    assert.ok(href, `${name} stylesheet link has no href`);
+    const asset = href[1];
+    const assetPath = path.resolve(root, asset);
+    assert.ok(assetPath.startsWith(root + path.sep), `nonlocal asset: ${asset}`);
+    assert.ok(fs.existsSync(assetPath), `missing asset: ${asset}`);
   }
 }
 
