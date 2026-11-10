@@ -39,6 +39,8 @@ for (const [name, page] of [
     const assetPath = path.resolve(root, asset);
     assert.ok(assetPath.startsWith(root + path.sep), `nonlocal asset: ${asset}`);
     assert.ok(fs.existsSync(assetPath), `missing asset: ${asset}`);
+    assert.ok(fs.statSync(assetPath).isFile(), `asset is not a file: ${asset}`);
+    assert.equal(path.extname(assetPath), '.css', `not a CSS asset: ${asset}`);
   }
 }
 
